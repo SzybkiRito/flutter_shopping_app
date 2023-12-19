@@ -19,8 +19,6 @@ class AppBottomNavigationBar extends StatefulWidget {
 class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
-    print('selectedIndex: ${widget.selectedIndex}');
-
     const double bottomNavigationRadius = 10.0;
     return ClipRRect(
       borderRadius: const BorderRadius.only(
