@@ -15,13 +15,14 @@ class OnBoarding extends StatelessWidget {
           children: [
             Flexible(
               flex: 2, // Adjust flex factor as needed
-              child: Center(
-                child: Image.asset(
-                  'assets/images/logo_transparent.png',
-                ),
+              child: Image.asset(
+                'assets/images/logo_transparent.png',
+                fit: BoxFit.contain,
+                height: 250,
+                width: 150,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.3),
             Flexible(
               flex: 1,
               child: Column(
@@ -35,7 +36,9 @@ class OnBoarding extends StatelessWidget {
                   SizedBox(
                     width: 250,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/sign_in');
+                      },
                       style: Theme.of(context).elevatedButtonTheme.style,
                       child: Text(
                         'START',
