@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_app/bloc/authentication/authentication_bloc.dart';
 import 'package:shopping_app/bloc/authentication/authentication_events.dart';
 import 'package:shopping_app/bloc/authentication/authentication_state.dart';
 import 'package:shopping_app/constants/colors.dart';
-import 'package:shopping_app/screens/onboarding/sign_in/sign_in.dart';
-import 'package:shopping_app/services/authentication.dart';
 import 'package:shopping_app/widgets/elevated_button.dart';
 import 'package:shopping_app/widgets/text_field.dart';
 
@@ -52,13 +51,12 @@ class _SignUpState extends State<SignUp> {
           padding: const EdgeInsets.all(defaultEdgePadding),
           child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
             builder: (context, state) {
-              if (state is AuthenticationSuccess) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SignIn(),
-                  ),
-                );
+              if (state is AuthenticationSignUpSuccess) {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pushReplacementNamed('/sign_in');
+                });
               }
+
               return Column(
                 children: [
                   Center(
@@ -88,7 +86,7 @@ class _SignUpState extends State<SignUp> {
                     textController: _confirmPasswordTextController,
                   ),
                   const SizedBox(height: 10.0),
-                  state is AuthenticationFailure
+                  state is AuthenticationSignUpFailure
                       ? Text(
                           state.errorMessage,
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.red),
@@ -100,7 +98,7 @@ class _SignUpState extends State<SignUp> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      state is! AuthenticationLoading
+                      state is! AuthenticationSignUpLoading
                           ? _buildButton('Sign Up', onPressed: () {
                               context.read<AuthenticationBloc>().add(
                                     AuthenticationSignUpRequested(

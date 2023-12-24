@@ -14,3 +14,7 @@ class AuthenticationSignUpRequested extends AuthenticationEvent {
 
   AuthenticationSignUpRequested({required this.email, required this.password, required this.confirmPassword});
 }
+
+class AuthenticationGoogleSignInRequested extends AuthenticationEvent {}
+
+class AuthenticationResetState extends AuthenticationEvent {}

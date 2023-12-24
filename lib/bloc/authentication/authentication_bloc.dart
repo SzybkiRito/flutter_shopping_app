@@ -10,25 +10,26 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
   }
 
   void _onSignInRequested(AuthenticationSignInRequested event, Emitter<AuthenticationState> emit) async {
-    emit(AuthenticationLoading());
+    emit(AuthenticationSignInLoading());
     final AuthenticationInfo authenticationInfo = await Authentication().signIn(
       event.email,
       event.password,
     );
 
     if (authenticationInfo.success) {
-      emit(AuthenticationSuccess());
+      emit(AuthenticationSignInSuccess());
     } else {
       // Error message can't be null cause success is false
-      emit(AuthenticationFailure(errorMessage: authenticationInfo.errorMessage!));
+      final String fixedErrorMessage = authenticationInfo.errorMessage!.replaceAll('-', ' ');
+      emit(AuthenticationSignInFailure(errorMessage: fixedErrorMessage));
     }
   }
 
   void _onSignUpRequested(AuthenticationSignUpRequested event, Emitter<AuthenticationState> emit) async {
-    emit(AuthenticationLoading());
+    emit(AuthenticationSignUpLoading());
     bool passwordsMatch = event.password == event.confirmPassword;
     if (!passwordsMatch) {
-      emit(AuthenticationFailure(errorMessage: 'Passwords do not match.'));
+      emit(AuthenticationSignUpFailure(errorMessage: 'Passwords do not match.'));
       return;
     }
 
@@ -38,10 +39,10 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     );
 
     if (authenticationInfo.success) {
-      emit(AuthenticationSuccess());
+      emit(AuthenticationSignUpSuccess());
     } else {
       // Error message can't be null cause success is false
-      emit(AuthenticationFailure(errorMessage: authenticationInfo.errorMessage!));
+      emit(AuthenticationSignUpFailure(errorMessage: authenticationInfo.errorMessage!));
     }
   }
 }
