@@ -6,6 +6,7 @@ import 'package:shopping_app/bloc/products/products_bloc.dart';
 import 'package:shopping_app/constants/routes.dart';
 import 'package:shopping_app/firebase_options.dart';
 import 'package:shopping_app/screens/onboarding/onboarding.dart';
+import 'package:shopping_app/services/service_database.dart';
 import 'package:shopping_app/services/service_locator.dart';
 import 'package:shopping_app/theme/theme.dart';
 
@@ -13,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupLocator();
+  serviceLocator<DatabaseService>().open();
   runApp(const MyApp());
 }
 
