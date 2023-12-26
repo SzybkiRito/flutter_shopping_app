@@ -4,6 +4,7 @@ import 'package:shopping_app/screens/checkout/checkout.dart';
 import 'package:shopping_app/screens/favorites/favorites.dart';
 import 'package:shopping_app/screens/home/home.dart';
 import 'package:shopping_app/widgets/bottom_navigation_bar.dart';
+import 'package:shopping_app/widgets/top_navigation_bar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -34,7 +35,9 @@ class _MainPageState extends State<MainPage> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
-      body: _pages[_selectedIndex],
+      extendBodyBehindAppBar: true,
+      appBar: const TopNavigationBar(),
+      body: SafeArea(child: _pages[_selectedIndex]),
     );
   }
 }

@@ -2,14 +2,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_app/bloc/authentication/authentication_bloc.dart';
+import 'package:shopping_app/bloc/products/products_bloc.dart';
 import 'package:shopping_app/constants/routes.dart';
 import 'package:shopping_app/firebase_options.dart';
 import 'package:shopping_app/screens/onboarding/onboarding.dart';
+import 'package:shopping_app/services/service_locator.dart';
 import 'package:shopping_app/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  setupLocator();
   runApp(const MyApp());
 }
 
@@ -23,7 +26,10 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthenticationBloc>(
           create: (context) => AuthenticationBloc(),
-        )
+        ),
+        BlocProvider<ProductsBloc>(
+          create: (context) => ProductsBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'ShopSphere',

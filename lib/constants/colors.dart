@@ -11,4 +11,6 @@ class SphereShopColors {
   static Color primaryColorDark = _getColorFromHex("393F48");
   static Color secondaryColor = _getColorFromHex("EEF1F4");
   static Color secondaryColorDark = _getColorFromHex("C3C6C9");
+  static Color baseShimmerColor = _getColorFromHex("F0F0F0");
+  static Color baseShimmerHighlightColor = _getColorFromHex("E0E0E0");
 }

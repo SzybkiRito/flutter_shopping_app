@@ -27,7 +27,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
       ),
       child: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        elevation: 0.0,
+        elevation: 1.0,
         backgroundColor: SphereShopColors.white,
         showSelectedLabels: false,
         showUnselectedLabels: false,

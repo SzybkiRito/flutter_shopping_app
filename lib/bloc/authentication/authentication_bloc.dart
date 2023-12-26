@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_app/bloc/authentication/authentication_events.dart';
 import 'package:shopping_app/bloc/authentication/authentication_state.dart';
 import 'package:shopping_app/services/authentication.dart';
+import 'package:shopping_app/services/service_locator.dart';
 
 class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   AuthenticationBloc() : super(AuthenticationInitial()) {
@@ -9,9 +10,10 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     on<AuthenticationSignUpRequested>(_onSignUpRequested);
   }
 
+  final Authentication _authentication = serviceLocator<Authentication>();
   void _onSignInRequested(AuthenticationSignInRequested event, Emitter<AuthenticationState> emit) async {
     emit(AuthenticationSignInLoading());
-    final AuthenticationInfo authenticationInfo = await Authentication().signIn(
+    final AuthenticationInfo authenticationInfo = await _authentication.signIn(
       event.email,
       event.password,
     );
@@ -33,7 +35,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       return;
     }
 
-    final AuthenticationInfo authenticationInfo = await Authentication().signUp(
+    final AuthenticationInfo authenticationInfo = await _authentication.signUp(
       event.email,
       event.password,
     );
