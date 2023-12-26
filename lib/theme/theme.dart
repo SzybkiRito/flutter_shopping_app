@@ -3,7 +3,7 @@ import 'package:shopping_app/constants/colors.dart';
 
 final ThemeData shopTheme = ThemeData(
   brightness: Brightness.light,
-  scaffoldBackgroundColor: SphereShopColors.primaryColor,
+  scaffoldBackgroundColor: SphereShopColors.white,
   textTheme: const TextTheme(
     titleLarge: TextStyle(
       fontSize: 35,
