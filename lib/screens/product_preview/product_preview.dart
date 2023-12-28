@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_app/api/models/product.dart';
 import 'package:shopping_app/constants/colors.dart';
+import 'package:shopping_app/services/service_locator.dart';
+import 'package:shopping_app/services/service_product_sqflite.dart';
 import 'package:shopping_app/widgets/elevated_button.dart';
 
 class ProductPreview extends StatefulWidget {
@@ -15,6 +17,7 @@ class ProductPreview extends StatefulWidget {
 }
 
 class _ProductPreviewState extends State<ProductPreview> with SingleTickerProviderStateMixin {
+  final ProductSqflite productSqflite = serviceLocator<ProductSqflite>();
   late AnimationController _animationController;
   late Animation<double> _heightAnimation;
   final double _collapsedHeight = 150.0;
@@ -47,7 +50,37 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
     }
   }
 
+  Future<void> _toggleFavoriteStatus() async {
+    final Product? existingProduct = await productSqflite.getProduct(widget.product.id);
+    Product updatedProduct = _createUpdatedProduct(existingProduct);
+    if (existingProduct != null) {
+      await productSqflite.updateProduct(updatedProduct);
+    } else {
+      await productSqflite.insertProduct(updatedProduct);
+    }
+
+    setState(() {
+      isProductMarkedAsFavorite = updatedProduct.isFavorite;
+    });
+  }
+
+  Product _createUpdatedProduct(Product? existingProduct) {
+    bool newFavoriteStatus = existingProduct != null ? !existingProduct.isFavorite : true;
+
+    return Product(
+      id: widget.product.id,
+      title: widget.product.title,
+      price: widget.product.price,
+      description: widget.product.description,
+      image: widget.product.image,
+      category: widget.product.category,
+      rating: widget.product.rating,
+      isFavorite: newFavoriteStatus,
+    );
+  }
+
   bool get _isExpanded => _heightAnimation.value == _expandedHeight;
+  bool isProductMarkedAsFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -226,58 +259,64 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: SphereShopColors.primaryColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+            StatefulBuilder(
+              builder: (context, setState) {
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: SphereShopColors.primaryColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(25.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'PRICE',
-                            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                  color: SphereShopColors.white,
-                                ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'PRICE',
+                                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                      color: SphereShopColors.white,
+                                    ),
+                              ),
+                              Text(
+                                '\$${widget.product.price}',
+                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                      color: SphereShopColors.white,
+                                    ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            '\$${widget.product.price}',
-                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  color: SphereShopColors.white,
-                                ),
+                          SphereShopElevatedButton(
+                            onPressed: () {},
+                            backgroundColor: SphereShopColors.primaryColorDark,
+                            child: Text(
+                              'ADD TO CART',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(color: SphereShopColors.white, fontSize: 16.0),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: _toggleFavoriteStatus,
+                            icon: isProductMarkedAsFavorite
+                                ? Icon(Icons.favorite, color: SphereShopColors.white)
+                                : Icon(Icons.favorite_border, color: SphereShopColors.white),
                           ),
                         ],
                       ),
-                      SphereShopElevatedButton(
-                        onPressed: () {},
-                        backgroundColor: SphereShopColors.primaryColorDark,
-                        child: Text(
-                          'ADD TO CART',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(color: SphereShopColors.white, fontSize: 16.0),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.favorite_border, color: SphereShopColors.white),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),
