@@ -44,16 +44,6 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
-              'assets/icons/catalog.svg',
-              colorFilter: ColorFilter.mode(
-                widget.selectedIndex == 1 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,
-                BlendMode.srcIn,
-              ),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
               'assets/icons/favorite.svg',
               colorFilter: ColorFilter.mode(
                 widget.selectedIndex == 2 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,

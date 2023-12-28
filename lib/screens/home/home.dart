@@ -4,6 +4,7 @@ import 'package:shopping_app/bloc/products/products_bloc.dart';
 import 'package:shopping_app/bloc/products/products_events.dart';
 import 'package:shopping_app/bloc/products/products_state.dart';
 import 'package:shopping_app/constants/colors.dart';
+import 'package:shopping_app/screens/product_preview/product_preview.dart';
 import 'package:shopping_app/widgets/product/product_card.dart';
 import 'package:shopping_app/widgets/product/product_shimmer.dart';
 
@@ -28,7 +29,18 @@ class _HomeState extends State<Home> {
         itemCount: products.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          return ProductCard(product: products[index]);
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ProductPreview(
+                    product: products[index],
+                  ),
+                ),
+              );
+            },
+            child: ProductCard(product: products[index]),
+          );
         },
       ),
     );

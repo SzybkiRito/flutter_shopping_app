@@ -29,16 +29,14 @@ final ThemeData shopTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: SphereShopColors.primaryColor,
+      elevation: 0,
       textStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         fontFamily: 'Mulish',
         color: SphereShopColors.white,
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 30,
-        vertical: 15,
-      ),
+      padding: const EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50),
       ),
