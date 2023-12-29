@@ -19,41 +19,12 @@ class ProductPreview extends StatefulWidget {
   State<ProductPreview> createState() => _ProductPreviewState();
 }
 
-class _ProductPreviewState extends State<ProductPreview> with SingleTickerProviderStateMixin {
+class _ProductPreviewState extends State<ProductPreview> {
+  GlobalKey _containerKey = GlobalKey();
   final ProductSqflite productSqflite = serviceLocator<ProductSqflite>();
   final ShoppingCartSqflite shoppingCartSqflite = serviceLocator<ShoppingCartSqflite>();
-
-  late AnimationController _animationController;
-  late Animation<double> _heightAnimation;
-  final double _collapsedHeight = 150.0;
-  final double _expandedHeight = 350.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _heightAnimation = Tween<double>(begin: _collapsedHeight, end: _expandedHeight).animate(_animationController)
-      ..addListener(() {
-        setState(() {});
-      });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _toggleContainer() {
-    if (_animationController.isCompleted) {
-      _animationController.reverse();
-    } else {
-      _animationController.forward();
-    }
-  }
+  bool isProductMarkedAsFavorite = false;
+  double _descriptionHeight = 0.0;
 
   void _notifyUserThatProductIsAddedToCart() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -86,8 +57,18 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
     if (isProductAddedSuccesfully) _notifyUserThatProductIsAddedToCart();
   }
 
-  bool get _isExpanded => _heightAnimation.value == _expandedHeight;
-  bool isProductMarkedAsFavorite = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _measureDescription());
+  }
+
+  void _measureDescription() {
+    final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+    setState(() {
+      _descriptionHeight = renderBox.size.height;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +81,7 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
               child: Stack(
                 children: [
                   Container(
-                    height: _heightAnimation.value + 600.0,
+                    height: 600 + _descriptionHeight,
                     margin: const EdgeInsets.only(top: 150),
                     decoration: BoxDecoration(
                       color: SphereShopColors.white,
@@ -133,7 +114,7 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
                                 ),
                           ),
                           Container(
-                            height: _heightAnimation.value,
+                            key: _containerKey,
                             margin: const EdgeInsets.only(top: 20.0),
                             decoration: BoxDecoration(
                               color: SphereShopColors.secondaryColor,
@@ -171,74 +152,47 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
                                       style: Theme.of(context).textTheme.titleMedium,
                                     ),
                                   ),
-                                  if (_isExpanded)
-                                    Text(
-                                      widget.product.description,
-                                      style: TextStyle(color: SphereShopColors.secondaryColorDark),
-                                    ),
-                                  if (_isExpanded)
-                                    Row(
-                                      children: [
-                                        Text('Rating: ', style: Theme.of(context).textTheme.titleMedium),
-                                        Text(
-                                          '${widget.product.rating.rate}',
-                                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                              color: widget.product.rating.rate <= 2.0
-                                                  ? SphereShopColors.red
-                                                  : SphereShopColors.green),
-                                        ),
-                                      ],
-                                    ),
-                                  if (_isExpanded)
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Rating count: ',
-                                          style: Theme.of(context).textTheme.titleMedium,
-                                        ),
-                                        Text(
-                                          '${widget.product.rating.count}',
-                                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                                color: SphereShopColors.secondaryColorDark,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  if (_isExpanded)
-                                    Row(
-                                      children: [
-                                        Text('Category: ', style: Theme.of(context).textTheme.titleMedium),
-                                        Text(
-                                          widget.product.category,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
-                                              .copyWith(color: SphereShopColors.secondaryColorDark),
-                                        ),
-                                      ],
-                                    ),
-                                  if (_isExpanded) const Spacer(),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: TextButton(
-                                        onPressed: _toggleContainer,
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              _isExpanded ? 'READ LESS' : 'READ MORE',
-                                              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                                    color: SphereShopColors.primaryColor,
-                                                  ),
-                                            ),
-                                            _isExpanded
-                                                ? Icon(Icons.keyboard_arrow_up, color: SphereShopColors.primaryColor)
-                                                : Icon(Icons.keyboard_arrow_down, color: SphereShopColors.primaryColor),
-                                          ],
-                                        ),
+                                  Text(
+                                    widget.product.description,
+                                    style: TextStyle(color: SphereShopColors.secondaryColorDark),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text('Rating: ', style: Theme.of(context).textTheme.titleMedium),
+                                      Text(
+                                        '${widget.product.rating.rate}',
+                                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                            color: widget.product.rating.rate <= 2.0
+                                                ? SphereShopColors.red
+                                                : SphereShopColors.green),
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Rating count: ',
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
+                                      Text(
+                                        '${widget.product.rating.count}',
+                                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                              color: SphereShopColors.secondaryColorDark,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text('Category: ', style: Theme.of(context).textTheme.titleMedium),
+                                      Text(
+                                        widget.product.category,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(color: SphereShopColors.secondaryColorDark),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
