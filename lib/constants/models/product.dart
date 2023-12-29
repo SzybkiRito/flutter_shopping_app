@@ -50,7 +50,8 @@ class Product {
       description: json['description'] as String,
       image: json['image'] as String,
       category: json['category'] as String,
-      rating: Rating(rate: json['ratingRate'] as double, count: json['ratingCount'] as int),
+      rating:
+          Rating(rate: double.parse(json['ratingRate'].toString()), count: int.parse(json['ratingCount'].toString())),
       isFavorite: json.containsKey('isFavorite') ? parseBoolFromNumber(json['isFavorite']) : false,
     );
   }

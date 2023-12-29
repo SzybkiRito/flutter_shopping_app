@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/screens/catalog/catalog.dart';
 import 'package:shopping_app/screens/checkout/checkout.dart';
 import 'package:shopping_app/screens/favorites/favorites.dart';
 import 'package:shopping_app/screens/home/home.dart';
@@ -17,7 +16,6 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = const <Widget>[
     Home(),
-    Catalog(),
     Favorites(),
     Checkout(),
   ];

@@ -43,7 +43,7 @@ dependencies:
   get_it: ^7.6.4
   shimmer: ^3.0.0
   sqflite: ^2.3.0
-  path: ^1.8.3
+  path: any
 
 dev_dependencies:
   flutter_test:

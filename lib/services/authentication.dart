@@ -12,6 +12,7 @@ class AuthenticationInfo {
 }
 
 class Authentication {
+  String? userId;
   bool _validateUserEmail(String email) {
     return email.contains('@');
   }
@@ -28,6 +29,7 @@ class Authentication {
       );
 
       Logger().log(Level.info, 'User ${userCredential.user!.uid} signed in.');
+      userId = userCredential.user!.uid;
       return AuthenticationInfo(success: true);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -46,6 +48,7 @@ class Authentication {
   }
 
   Future<void> signOut() async {
+    userId = null;
     await FirebaseAuth.instance.signOut();
   }
 

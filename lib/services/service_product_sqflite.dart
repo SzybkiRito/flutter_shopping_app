@@ -24,6 +24,7 @@ class ProductSqflite {
 
   Future<Product?> getProduct(int id) async {
     final db = await _databaseService.open();
+
     try {
       final List<Map<String, dynamic>> maps = await db.query(
         'products',
@@ -34,6 +35,24 @@ class ProductSqflite {
         return Product.fromSqflite(maps.first);
       }
       return null;
+    } catch (e) {
+      Logger().log(Level.error, e.toString());
+      return null;
+    } finally {
+      await _databaseService.close(db);
+    }
+  }
+
+  Future<Product?> getProductById(int productId) async {
+    final db = await _databaseService.open();
+
+    try {
+      final List<Map<String, dynamic>> maps = await db.query(
+        'products',
+        where: 'id = ?',
+        whereArgs: [productId],
+      );
+      return Product.fromSqflite(maps.first);
     } catch (e) {
       Logger().log(Level.error, e.toString());
       return null;
@@ -77,23 +96,12 @@ class ProductSqflite {
     }
   }
 
-  Future<bool> isProductMarkedAsFavorite(Product product) async {
-    final db = await _databaseService.open();
-    try {
-      final List<Map<String, dynamic>> maps = await db.query(
-        'products',
-        where: 'id = ?',
-        whereArgs: [product.id],
-      );
-      if (maps.isNotEmpty) {
-        return maps.first['isFavorite'] == 1;
+  Future<bool> insertProductIfNotExists(Product product) {
+    return getProductById(product.id).then((value) async {
+      if (value == null) {
+        return await insertProduct(product);
       }
-      return false;
-    } catch (e) {
-      Logger().log(Level.error, e.toString());
-      return false;
-    } finally {
-      await _databaseService.close(db);
-    }
+      return true;
+    });
   }
 }

@@ -2,10 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_app/bloc/authentication/authentication_bloc.dart';
+import 'package:shopping_app/bloc/favorties/favorties_bloc.dart';
 import 'package:shopping_app/bloc/products/products_bloc.dart';
 import 'package:shopping_app/constants/routes.dart';
 import 'package:shopping_app/firebase_options.dart';
-import 'package:shopping_app/screens/main_page.dart';
 import 'package:shopping_app/screens/onboarding/onboarding.dart';
 import 'package:shopping_app/services/service_database.dart';
 import 'package:shopping_app/services/service_locator.dart';
@@ -33,12 +33,15 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProductsBloc>(
           create: (context) => ProductsBloc(),
         ),
+        BlocProvider<FavortiesBloc>(
+          create: (context) => FavortiesBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'ShopSphere',
         theme: shopTheme,
         routes: routes,
-        home: const MainPage(),
+        home: const OnBoarding(),
       ),
     );
   }

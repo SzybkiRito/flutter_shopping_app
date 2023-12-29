@@ -20,7 +20,7 @@ class ProductPreview extends StatefulWidget {
 }
 
 class _ProductPreviewState extends State<ProductPreview> {
-  GlobalKey _containerKey = GlobalKey();
+  final GlobalKey _containerKey = GlobalKey();
   final ProductSqflite productSqflite = serviceLocator<ProductSqflite>();
   final ShoppingCartSqflite shoppingCartSqflite = serviceLocator<ShoppingCartSqflite>();
   bool isProductMarkedAsFavorite = false;

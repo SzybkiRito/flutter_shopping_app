@@ -10,6 +10,13 @@ CREATE TABLE IF NOT EXISTS products (
     isFavorite BOOLEAN NOT NULL DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS favorites (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id VARCHAR(128) NOT NULL,
+    product_id INT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
 CREATE TABLE IF NOT EXISTS shopping_cart (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INT NOT NULL,
