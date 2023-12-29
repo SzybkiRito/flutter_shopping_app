@@ -1,4 +1,4 @@
-import 'package:shopping_app/api/models/rating.dart';
+import 'package:shopping_app/constants/models/rating.dart';
 
 class Product {
   final int id;

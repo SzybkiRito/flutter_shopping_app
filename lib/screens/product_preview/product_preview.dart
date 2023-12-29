@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/api/models/product.dart';
 import 'package:shopping_app/constants/colors.dart';
+import 'package:shopping_app/constants/models/product.dart';
+import 'package:shopping_app/constants/models/shopping_cart.dart';
 import 'package:shopping_app/services/service_locator.dart';
 import 'package:shopping_app/services/service_product_sqflite.dart';
+import 'package:shopping_app/services/service_shopping_cart_sqflite.dart';
 import 'package:shopping_app/widgets/elevated_button.dart';
+import 'package:shopping_app/widgets/favorite_button.dart';
 
 class ProductPreview extends StatefulWidget {
   final Product product;
@@ -18,6 +21,8 @@ class ProductPreview extends StatefulWidget {
 
 class _ProductPreviewState extends State<ProductPreview> with SingleTickerProviderStateMixin {
   final ProductSqflite productSqflite = serviceLocator<ProductSqflite>();
+  final ShoppingCartSqflite shoppingCartSqflite = serviceLocator<ShoppingCartSqflite>();
+
   late AnimationController _animationController;
   late Animation<double> _heightAnimation;
   final double _collapsedHeight = 150.0;
@@ -50,33 +55,35 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
     }
   }
 
-  Future<void> _toggleFavoriteStatus() async {
-    final Product? existingProduct = await productSqflite.getProduct(widget.product.id);
-    Product updatedProduct = _createUpdatedProduct(existingProduct);
-    if (existingProduct != null) {
-      await productSqflite.updateProduct(updatedProduct);
-    } else {
-      await productSqflite.insertProduct(updatedProduct);
-    }
-
-    setState(() {
-      isProductMarkedAsFavorite = updatedProduct.isFavorite;
-    });
+  void _notifyUserThatProductIsAddedToCart() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Product added to cart!',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: SphereShopColors.white,
+              ),
+        ),
+        backgroundColor: SphereShopColors.primaryColorDark,
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
 
-  Product _createUpdatedProduct(Product? existingProduct) {
-    bool newFavoriteStatus = existingProduct != null ? !existingProduct.isFavorite : true;
-
-    return Product(
-      id: widget.product.id,
-      title: widget.product.title,
-      price: widget.product.price,
-      description: widget.product.description,
-      image: widget.product.image,
-      category: widget.product.category,
-      rating: widget.product.rating,
-      isFavorite: newFavoriteStatus,
+  Future<void> _addToCart() async {
+    Product? isProductExistInDatabase = await productSqflite.getProduct(widget.product.id);
+    if (isProductExistInDatabase == null) {
+      await productSqflite.insertProduct(widget.product);
+    }
+    bool isProductAddedSuccesfully = await shoppingCartSqflite.insertShoppingCart(
+      ShoppingCart(
+        id: 1,
+        userId: 1,
+        productId: widget.product.id,
+        quantity: 1,
+      ),
     );
+    if (isProductAddedSuccesfully) _notifyUserThatProductIsAddedToCart();
   }
 
   bool get _isExpanded => _heightAnimation.value == _expandedHeight;
@@ -93,7 +100,7 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
               child: Stack(
                 children: [
                   Container(
-                    height: _heightAnimation.value + 450.0,
+                    height: _heightAnimation.value + 600.0,
                     margin: const EdgeInsets.only(top: 150),
                     decoration: BoxDecoration(
                       color: SphereShopColors.white,
@@ -295,7 +302,7 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
                             ],
                           ),
                           SphereShopElevatedButton(
-                            onPressed: () {},
+                            onPressed: _addToCart,
                             backgroundColor: SphereShopColors.primaryColorDark,
                             child: Text(
                               'ADD TO CART',
@@ -305,12 +312,7 @@ class _ProductPreviewState extends State<ProductPreview> with SingleTickerProvid
                                   .copyWith(color: SphereShopColors.white, fontSize: 16.0),
                             ),
                           ),
-                          IconButton(
-                            onPressed: _toggleFavoriteStatus,
-                            icon: isProductMarkedAsFavorite
-                                ? Icon(Icons.favorite, color: SphereShopColors.white)
-                                : Icon(Icons.favorite_border, color: SphereShopColors.white),
-                          ),
+                          FavoriteButton(product: widget.product),
                         ],
                       ),
                     ),

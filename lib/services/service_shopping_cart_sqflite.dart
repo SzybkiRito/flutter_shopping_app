@@ -1,18 +1,18 @@
 import 'package:logger/logger.dart';
-import 'package:shopping_app/constants/models/product.dart';
+import 'package:shopping_app/constants/models/shopping_cart.dart';
 import 'package:shopping_app/services/service_database.dart';
 import 'package:shopping_app/services/service_locator.dart';
 import 'package:sqflite/sqflite.dart';
 
-class ProductSqflite {
+class ShoppingCartSqflite {
   final DatabaseService _databaseService = serviceLocator<DatabaseService>();
 
-  Future<List<Product>> getProducts() async {
+  Future<List<ShoppingCart>> getShoppingCarts() async {
     final db = await _databaseService.open();
     try {
-      final List<Map<String, dynamic>> maps = await db.query('products');
+      final List<Map<String, dynamic>> maps = await db.query('shopping_cart');
       return List.generate(maps.length, (i) {
-        return Product.fromSqflite(maps[i]);
+        return ShoppingCart.fromSqflite(maps[i]);
       });
     } catch (e) {
       Logger().log(Level.error, e.toString());
@@ -22,16 +22,16 @@ class ProductSqflite {
     }
   }
 
-  Future<Product?> getProduct(int id) async {
+  Future<ShoppingCart?> getShoppingCartByCartId(int id) async {
     final db = await _databaseService.open();
     try {
       final List<Map<String, dynamic>> maps = await db.query(
-        'products',
+        'shopping_cart',
         where: 'id = ?',
         whereArgs: [id],
       );
       if (maps.isNotEmpty) {
-        return Product.fromSqflite(maps.first);
+        return ShoppingCart.fromSqflite(maps.first);
       }
       return null;
     } catch (e) {
@@ -42,30 +42,32 @@ class ProductSqflite {
     }
   }
 
-  Future<bool> updateProduct(Product product) async {
+  Future<ShoppingCart?> getShoppingCartByUserId(int userId) async {
     final db = await _databaseService.open();
     try {
-      await db.update(
-        'products',
-        product.toJson(),
-        where: 'id = ?',
-        whereArgs: [product.id],
+      final List<Map<String, dynamic>> maps = await db.query(
+        'shopping_cart',
+        where: 'user_id = ?',
+        whereArgs: [userId],
       );
-      return true;
+      if (maps.isNotEmpty) {
+        return ShoppingCart.fromSqflite(maps.first);
+      }
+      return null;
     } catch (e) {
       Logger().log(Level.error, e.toString());
-      return false;
+      return null;
     } finally {
       await _databaseService.close(db);
     }
   }
 
-  Future<bool> insertProduct(Product product) async {
+  Future<bool> insertShoppingCart(ShoppingCart shoppingCart) async {
     final db = await _databaseService.open();
     try {
       await db.insert(
-        'products',
-        product.toJson(),
+        'shopping_cart',
+        shoppingCart.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
       return true;
@@ -77,18 +79,16 @@ class ProductSqflite {
     }
   }
 
-  Future<bool> isProductMarkedAsFavorite(Product product) async {
+  Future<bool> updateShoppingCart(ShoppingCart shoppingCart) async {
     final db = await _databaseService.open();
     try {
-      final List<Map<String, dynamic>> maps = await db.query(
-        'products',
+      await db.update(
+        'shopping_cart',
+        shoppingCart.toJson(),
         where: 'id = ?',
-        whereArgs: [product.id],
+        whereArgs: [shoppingCart.id],
       );
-      if (maps.isNotEmpty) {
-        return maps.first['isFavorite'] == 1;
-      }
-      return false;
+      return true;
     } catch (e) {
       Logger().log(Level.error, e.toString());
       return false;

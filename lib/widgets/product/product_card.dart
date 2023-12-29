@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/api/models/product.dart';
+import 'package:shopping_app/constants/models/product.dart';
 import 'package:shopping_app/widgets/product/product_image_shimmer.dart';
 
 class ProductCard extends StatelessWidget {

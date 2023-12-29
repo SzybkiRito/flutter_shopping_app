@@ -5,6 +5,7 @@ import 'package:shopping_app/bloc/authentication/authentication_bloc.dart';
 import 'package:shopping_app/bloc/products/products_bloc.dart';
 import 'package:shopping_app/constants/routes.dart';
 import 'package:shopping_app/firebase_options.dart';
+import 'package:shopping_app/screens/main_page.dart';
 import 'package:shopping_app/screens/onboarding/onboarding.dart';
 import 'package:shopping_app/services/service_database.dart';
 import 'package:shopping_app/services/service_locator.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         title: 'ShopSphere',
         theme: shopTheme,
         routes: routes,
-        home: const OnBoarding(),
+        home: const MainPage(),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:shopping_app/api/api_service.dart';
-import 'package:shopping_app/api/models/product.dart';
+import 'package:shopping_app/constants/models/product.dart';
 import 'package:shopping_app/services/service_locator.dart';
 
 final ApiService apiService = serviceLocator<ApiService>();

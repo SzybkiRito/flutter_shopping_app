@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping_app/api/connection/fetch_products.dart';
-import 'package:shopping_app/api/models/product.dart';
 import 'package:shopping_app/bloc/products/products_events.dart';
 import 'package:shopping_app/bloc/products/products_state.dart';
+import 'package:shopping_app/constants/models/product.dart';
 
 class ProductsBloc extends Bloc<ProductsEvents, ProductsState> {
   ProductsBloc() : super(ProductsInitial()) {

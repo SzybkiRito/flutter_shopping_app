@@ -1,4 +1,4 @@
-import 'package:shopping_app/api/models/product.dart';
+import 'package:shopping_app/constants/models/product.dart';
 
 abstract class ProductsState {}
 
