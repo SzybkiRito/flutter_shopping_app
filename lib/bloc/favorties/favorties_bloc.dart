@@ -9,10 +9,11 @@ part 'favorties_state.dart';
 
 class FavortiesBloc extends Bloc<FavortiesEvent, FavortiesState> {
   FavortiesBloc() : super(FavortiesInitial()) {
-    on<FavortiesFetchEvent>(_onFetchFavorties);
+    on<FavoritesFetchEvent>(_onFetchFavorties);
+    on<FavoritesRemoveEvent>(_onRemoveFavorite);
   }
 
-  void _onFetchFavorties(FavortiesFetchEvent event, Emitter<FavortiesState> emit) async {
+  void _onFetchFavorties(FavoritesFetchEvent event, Emitter<FavortiesState> emit) async {
     emit(FavortiesLoading());
     final favoritesSqflite = serviceLocator<FavoritesSqflite>();
     final List<Product> favoriteProducts = await favoritesSqflite.getFavoriteProductsByUserId();
@@ -23,5 +24,10 @@ class FavortiesBloc extends Bloc<FavortiesEvent, FavortiesState> {
     }
 
     emit(FavortiesLoaded(favoriteProducts: favoriteProducts));
+  }
+
+  void _onRemoveFavorite(FavoritesRemoveEvent event, Emitter<FavortiesState> emit) async {
+    final favoritesSqflite = serviceLocator<FavoritesSqflite>();
+    await favoritesSqflite.deleteFavoriteProduct(event.productId);
   }
 }

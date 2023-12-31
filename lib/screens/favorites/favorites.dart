@@ -18,7 +18,11 @@ class _FavoritesState extends State<Favorites> {
   @override
   void initState() {
     super.initState();
-    context.read<FavortiesBloc>().add(FavortiesFetchEvent());
+    context.read<FavortiesBloc>().add(FavoritesFetchEvent());
+  }
+
+  void _onDismissed(DismissDirection direction, Product item) {
+    context.read<FavortiesBloc>().add(FavoritesRemoveEvent(item));
   }
 
   @override
@@ -46,6 +50,10 @@ class _FavoritesState extends State<Favorites> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Dismissible(
                       key: ValueKey<int>(items[index].id),
+                      onDismissed: (direction) => _onDismissed(
+                        direction,
+                        items[index],
+                      ),
                       child: HorizontalProductCard(
                         product: items[index],
                       ),
