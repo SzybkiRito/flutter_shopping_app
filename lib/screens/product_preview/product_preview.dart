@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:shopping_app/constants/colors.dart';
 import 'package:shopping_app/constants/models/product.dart';
 import 'package:shopping_app/constants/models/shopping_cart.dart';
+import 'package:shopping_app/services/authentication.dart';
 import 'package:shopping_app/services/service_locator.dart';
 import 'package:shopping_app/services/service_product_sqflite.dart';
 import 'package:shopping_app/services/service_shopping_cart_sqflite.dart';
 import 'package:shopping_app/widgets/elevated_button.dart';
 import 'package:shopping_app/widgets/favorite_button.dart';
+import 'package:shopping_app/widgets/top_rounded_container.dart';
 
 class ProductPreview extends StatefulWidget {
   final Product product;
@@ -26,11 +28,11 @@ class _ProductPreviewState extends State<ProductPreview> {
   bool isProductMarkedAsFavorite = false;
   double _descriptionHeight = 0.0;
 
-  void _notifyUserThatProductIsAddedToCart() {
+  void _notify(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Product added to cart!',
+          message,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 color: SphereShopColors.white,
               ),
@@ -42,19 +44,21 @@ class _ProductPreviewState extends State<ProductPreview> {
   }
 
   Future<void> _addToCart() async {
-    Product? isProductExistInDatabase = await productSqflite.getProduct(widget.product.id);
-    if (isProductExistInDatabase == null) {
-      await productSqflite.insertProduct(widget.product);
+    String? userId = serviceLocator<Authentication>().userId;
+    if (userId == null) {
+      _notify('You need to be logged in to add products to cart');
+      return;
     }
     bool isProductAddedSuccesfully = await shoppingCartSqflite.insertShoppingCart(
       ShoppingCart(
         id: 1,
-        userId: 1,
+        userId: userId,
         productId: widget.product.id,
         quantity: 1,
       ),
     );
-    if (isProductAddedSuccesfully) _notifyUserThatProductIsAddedToCart();
+
+    if (isProductAddedSuccesfully) _notify("Product added to cart");
   }
 
   @override
@@ -224,51 +228,40 @@ class _ProductPreviewState extends State<ProductPreview> {
               builder: (context, setState) {
                 return Align(
                   alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: SphereShopColors.primaryColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(30.0),
-                        topRight: Radius.circular(30.0),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(25.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'PRICE',
-                                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                      color: SphereShopColors.white,
-                                    ),
-                              ),
-                              Text(
-                                '\$${widget.product.price}',
-                                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                      color: SphereShopColors.white,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          SphereShopElevatedButton(
-                            onPressed: _addToCart,
-                            backgroundColor: SphereShopColors.primaryColorDark,
-                            child: Text(
-                              'ADD TO CART',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(color: SphereShopColors.white, fontSize: 16.0),
+                  child: TopRoundedContainer(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'PRICE',
+                              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    color: SphereShopColors.white,
+                                  ),
                             ),
+                            Text(
+                              '\$${widget.product.price}',
+                              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    color: SphereShopColors.white,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        SphereShopElevatedButton(
+                          onPressed: _addToCart,
+                          backgroundColor: SphereShopColors.primaryColorDark,
+                          child: Text(
+                            'ADD TO CART',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(color: SphereShopColors.white, fontSize: 16.0),
                           ),
-                          FavoriteButton(product: widget.product),
-                        ],
-                      ),
+                        ),
+                        FavoriteButton(product: widget.product),
+                      ],
                     ),
                   ),
                 );

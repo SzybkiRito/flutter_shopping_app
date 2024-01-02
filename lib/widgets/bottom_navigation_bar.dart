@@ -46,7 +46,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
             icon: SvgPicture.asset(
               'assets/icons/favorite.svg',
               colorFilter: ColorFilter.mode(
-                widget.selectedIndex == 2 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,
+                widget.selectedIndex == 1 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,
                 BlendMode.srcIn,
               ),
             ),
@@ -56,7 +56,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
             icon: SvgPicture.asset(
               'assets/icons/shopping_cart.svg',
               colorFilter: ColorFilter.mode(
-                widget.selectedIndex == 3 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,
+                widget.selectedIndex == 2 ? SphereShopColors.primaryColor : SphereShopColors.secondaryColorDark,
                 BlendMode.srcIn,
               ),
             ),

@@ -42,7 +42,7 @@ class ShoppingCartSqflite {
     }
   }
 
-  Future<ShoppingCart?> getShoppingCartByUserId(int userId) async {
+  Future<List<ShoppingCart?>> getShoppingCartByUserId(String userId) async {
     final db = await _databaseService.open();
     try {
       final List<Map<String, dynamic>> maps = await db.query(
@@ -50,13 +50,12 @@ class ShoppingCartSqflite {
         where: 'user_id = ?',
         whereArgs: [userId],
       );
-      if (maps.isNotEmpty) {
-        return ShoppingCart.fromSqflite(maps.first);
-      }
-      return null;
+      return List.generate(maps.length, (i) {
+        return ShoppingCart.fromSqflite(maps[i]);
+      });
     } catch (e) {
       Logger().log(Level.error, e.toString());
-      return null;
+      return [];
     } finally {
       await _databaseService.close(db);
     }
@@ -67,7 +66,11 @@ class ShoppingCartSqflite {
     try {
       await db.insert(
         'shopping_cart',
-        shoppingCart.toJson(),
+        {
+          'user_id': shoppingCart.userId,
+          'product_id': shoppingCart.productId,
+          'quantity': shoppingCart.quantity,
+        },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
       return true;
@@ -84,7 +87,28 @@ class ShoppingCartSqflite {
     try {
       await db.update(
         'shopping_cart',
-        shoppingCart.toJson(),
+        {
+          'user_id': shoppingCart.userId,
+          'product_id': shoppingCart.productId,
+          'quantity': shoppingCart.quantity,
+        },
+        where: 'id = ?',
+        whereArgs: [shoppingCart.id],
+      );
+      return true;
+    } catch (e) {
+      Logger().log(Level.error, e.toString());
+      return false;
+    } finally {
+      await _databaseService.close(db);
+    }
+  }
+
+  Future<bool> removeShoppingCart(ShoppingCart shoppingCart) async {
+    final db = await _databaseService.open();
+    try {
+      await db.delete(
+        'shopping_cart',
         where: 'id = ?',
         whereArgs: [shoppingCart.id],
       );

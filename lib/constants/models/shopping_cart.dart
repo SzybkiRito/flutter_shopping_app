@@ -1,6 +1,6 @@
 class ShoppingCart {
   final int id;
-  final int userId;
+  final String userId;
   final int productId;
   final int quantity;
 
@@ -14,7 +14,7 @@ class ShoppingCart {
   factory ShoppingCart.fromSqflite(Map<String, dynamic> json) {
     return ShoppingCart(
       id: json['id'] as int,
-      userId: json['user_id'] as int,
+      userId: json['user_id'] as String,
       productId: json['product_id'] as int,
       quantity: json['quantity'] as int,
     );
@@ -23,7 +23,7 @@ class ShoppingCart {
   factory ShoppingCart.toSqflite(Map<String, dynamic> json) {
     return ShoppingCart(
       id: json['id'] as int,
-      userId: json['user_id'] as int,
+      userId: json['user_id'] as String,
       productId: json['product_id'] as int,
       quantity: json['quantity'] as int,
     );
